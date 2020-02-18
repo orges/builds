@@ -44,6 +44,9 @@ function finerr() {
         -d "disable_web_page_preview=true" \
         -d "parse_mode=markdown" \
         -d text="Build threw error(s)"
+    LOG=log.txt
+    curl -F document=@$LOG "https://api.telegram.org/bot$token/sendDocument" \
+        -F chat_id="$chat_id"
     exit 1
 }
 # Build Success
@@ -61,7 +64,7 @@ function compile() {
                     ARCH=arm64 \
                     CC=clang \
                     CLANG_TRIPLE=aarch64-linux-gnu- \
-                    CROSS_COMPILE=aarch64-linux-android- 
+                    CROSS_COMPILE=aarch64-linux-android- 2>&1 | tee log.txt
 
     if ! [ -a "$IMAGE" ]; then
         finerr
