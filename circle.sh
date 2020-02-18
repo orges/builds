@@ -3,7 +3,7 @@ echo "Cloning dependencies"
 #git clone --depth=1 https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6189010 clang
 git clone --depth=1 https://github.com/orgesified/gccarm gcc
 git clone --depth=1 https://github.com/orgesified/gcc64
-git clone https://github.com/z4nyx/AnyKernel3.git -b lavender --depth=1 AnyKernel
+git clone --depth=1 https://github.com/orgesified/AnyKernel3
 echo "Done"
 KERNEL_DIR=$(pwd)
 IMAGE="${KERNEL_DIR}/out/arch/arm64/boot/Image.gz-dtb"
