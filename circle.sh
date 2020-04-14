@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 echo "Cloning dependencies"
-git clone --depth=1 https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6189010 clang
-git clone --depth=1 https://github.com/orgesified/gccarm gcc
-git clone --depth=1 https://github.com/orgesified/gcc64
+git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
+#git clone --depth=1 https://github.com/orgesified/gccarm gcc
+#git clone --depth=1 https://github.com/orgesified/gcc64
 git clone --depth=1 https://github.com/orgesified/AnyKernel3
 echo "Done"
 KERNEL_DIR=$(pwd)
 IMAGE="${KERNEL_DIR}/out/arch/arm64/boot/Image.gz-dtb"
 TIME=$(date +"%H-%d%m%Y")
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-export CROSS_COMPILE_ARM32=${KERNEL_DIR}/gcc/bin/arm-linux-androideabi-
+#export CROSS_COMPILE_ARM32=${KERNEL_DIR}/gcc/bin/arm-linux-androideabi-
 #export CROSS_COMPILE=${KERNEL_DIR}/gcc64/bin/aarch64-linux-android-
-PATH="${KERNEL_DIR}/clang/bin:${KERNEL_DIR}/gcc64/bin:${PATH}"
-export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+#PATH="${KERNEL_DIR}/clang/bin:${KERNEL_DIR}/gcc64/bin:${PATH}"
+PATH="${PWD}/clang/bin:$PATH"
+#export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+export LD="${PWD}/clang/bin/ld.lld"
 export ARCH=arm64
 export KBUILD_BUILD_USER=orges
 export KBUILD_BUILD_HOST=orges
@@ -59,12 +61,14 @@ function buildsucs() {
 }
 # Compile plox
 function compile() {
-    make -j$(nproc) O=out ARCH=arm64 whyred-perf_defconfig
-    make -j$(nproc) O=out \
-                    ARCH=arm64 \
-                    CC=clang \
-                    CLANG_TRIPLE=aarch64-linux-gnu- \
-                    CROSS_COMPILE=aarch64-linux-android- 2>&1 | tee log.txt
+   make O=out ARCH=arm64 whyred-perf_defconfig
+       make -j$(nproc --all) O=out \
+                             ARCH=arm64 \
+                             LD=ld.lld \
+                             CC=clang \
+                             CROSS_COMPILE=aarch64-linux-gnu- \
+                             CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee log.txt
+} 
 
     if ! [ -a "$IMAGE" ]; then
         finerr
