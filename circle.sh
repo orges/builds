@@ -68,7 +68,6 @@ function compile() {
                              CC=clang \
                              CROSS_COMPILE=aarch64-linux-gnu- \
                              CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee log.txt
-} 
 
     if ! [ -a "$IMAGE" ]; then
         finerr
